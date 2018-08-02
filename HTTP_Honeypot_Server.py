@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Title : HTTP_Honeypot
+# Author: BENSAAD Anouar
 import socket
 import time
 import sys
