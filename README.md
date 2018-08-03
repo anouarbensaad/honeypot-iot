@@ -7,6 +7,7 @@ This tool is a HTTP server in Python which logs HackerIP and all the tracing he 
 * Python (2.7 or 3.0)
 * Apache2
 * Mysql-server
+* HTTrack
 
 #Installation
 
@@ -23,6 +24,7 @@ This tool is a HTTP server in Python which logs HackerIP and all the tracing he 
 
 * run server with command : `python HTTP_Honeypot_Server.py`
 * Starting Server ON `999`, Username : `root` , Password : `toor`
+* Run `HTTrack` for copy real websites to local directory and copy it in `Sys/fake`
 
 #Test
 
