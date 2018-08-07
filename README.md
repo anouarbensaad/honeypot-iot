@@ -1,5 +1,5 @@
 # HTTP-Honeypot
-it is a tool to simulate http server attacks in Python which logs HackerIP and all the tracing he does into a Logfile then a database.
+This tool to simulate http server attacks in Python which logs HackerIP and all the tracing he does into a Logfile then a database.
 
 #Requirements
 
