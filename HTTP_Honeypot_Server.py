@@ -3,6 +3,10 @@
 # Title : Router_Honeypot
 # Author: BENSAAD Anouar
 
+# -*- coding: utf-8 -*-
+
+# Let's import what we need
+
 import socket
 import time
 import sys
