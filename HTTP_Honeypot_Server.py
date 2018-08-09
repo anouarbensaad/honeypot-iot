@@ -36,12 +36,12 @@ else:
 que = '\033[1;34m[?]\033[1;m'
 
 
-MSGLEN = 1024
+MSGLEN = 1024	#DataLength
 dbconn = None
 server_sock = None
 
+#FUNCTION RECIEVE DATA 
 def myreceive(c):
-
     chunks = []
     bytes_recd = 0
     while bytes_recd < MSGLEN:
@@ -77,8 +77,10 @@ def process_request(c,addr,datainput):
 		#con.commit()
 
 		print  '%s Time:'% red,current_time, ' Hacker: ', ip_hacker 
-		print  '%s Bad guy is looking for : \n\r'% white,end,data 
-
+		print  '%s Bad guy is looking for : \n\r'% white,data 
+		
+		#/Sys/log/Client Data : Hacker IP , OS Information ..
+		
 		with open('Sys/log/Client Data', 'a') as file :
                    file.write(timestr +'Informations :' +str(data)+'\n')
 
@@ -148,12 +150,12 @@ def Main():
 
 
 #Just Banner
-	print("%s  _          _   ____           _   _                        " % white)
-	print("%s (_)___  ___| |_/ ___|  ___    | | | | ___  _ __   ___ _   _ " % white)
-	print("%s | / __|/ _ \ __\___ \ / _ \   | |_| |/ _ \| '_ \ / _ \ | | |" % white)
-	print("%s | \__ \  __/ |_ ___) | (_) |  |  _  | (_) | | | |  __/ |_| |" % red)
-	print("%s |_|___/\___|\__|____/ \___/___|_| |_|\___/|_| |_|\___|\__, |" % red)
-	print("%s                          |_____|                      |___/ " % end)
+	print("%s    _           __  _____            __  __                      " % red)
+	print("%s   (_)_______  / /_/ ___/____       / / / /___  ____  ___  __  __" % red)
+	print("%s  / / ___/ _ \/ __/\__ \/ __ \     / /_/ / __ \/ __ \/ _ \/ / / /" % red)
+	print("%s / (__  )  __/ /_ ___/ / /_/ /    / __  / /_/ / / / /  __/ /_/ / " % red)
+	print("%s/_/____/\___/\__//____/\____/____/_/ /_/\____/_/ /_/\___/\__, /  " % white)
+	print("%s                           /_____/                      /____/   " % white)
 
 	#Global Variable.
 	global dbconn, server_sock
@@ -177,22 +179,26 @@ def Main():
  	#Warning File, Administrator Typing Fault.
            with open('Warning', 'a+r') as file :
  	    file.write(timestr + '**** Warning **** : It is a Brute Force:'  +str(user_in) +'/' +str(user_input))
-           sys.exit('%s Incorrect Password, terminating... \n' % bad)
-
- 	print '%s Connexion avec Succes' % good
- 	#Socket Connexion
+           sys.exit('%s Incorrect Password, terminating... \n' % bad,white)
+ 	print '\n%s Connexion avec Succes' % good
+ 	
+	#Socket Connexion
 	server_sock = socket.socket()
 	server_name = ''
 	server_port = 999
+	
 	#Banner of IoT : Router
+	
 	server_banner = """Sagem F@st 2604 ADSL router linux 7 3.49a4G_Topnet
   | banner: \xFF\xFD\x01\xFF\xFD!\xFF\xFB\x01\xFF\xFB\x03FAST2604 ADSL Rout
   |_er (Software Version:3.49a4G_Topnet)\x0D\x0ALogin:
   Service Info: Device: broadband router """
+	
 	server_sock.bind((server_name, server_port))
 	header = ''
+	
 	#Server Running.
-	print '%s Starting Server ON' % run, server_name, server_port
+	print '%s Starting Server ON' % run,white,server_name, server_port
 
 	server_sock.listen(5)
 	try:
@@ -211,4 +217,5 @@ def Main():
  
 
 if __name__== '__main__' :
+
         Main ()
