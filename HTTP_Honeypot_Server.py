@@ -53,7 +53,9 @@ def myreceive(c):
 
 def process_request(c,addr,datainput):
 
-	global dbconn
+	#Global Variable Db Connexion
+	
+	global dbconn 
 	try:
 		cursor = dbconn.cursor()
 		timestr = time.strftime("%Y/%m/%d-%H/%M/%S")
@@ -124,10 +126,10 @@ def process_request(c,addr,datainput):
            	   file.write(timestr +'Body request :' +str(requested_file)+'\n')
 		
                 # FUCNTION INSERT INTO MYSQL
-                aa = str(current_time)
+                aa = str(current_time) 
                 bb = str(ip_hacker)
                 cc = str(requested_file)
-                log = (aa, bb, cc)
+                log = (aa, bb, cc) #log DATABASE_TABLE
                 cursor.execute("""INSERT INTO log (date, iphacker, uri) VALUES (%s, %s, %s)""",log);
                 dbconn.commit()
 
