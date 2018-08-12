@@ -36,37 +36,50 @@ else:
 que = '\033[1;34m[?]\033[1;m'
 
 
-MSGLEN = 1024	#DataLength
+MSGLEN = 1024
 dbconn = None
 server_sock = None
+server_name = 'Apache/2.2.8 (SAGEM-OS) DAV/2'
+#server_name = 'lighttpd/2.2.8'
 
-#FUNCTION RECIEVE DATA 
+notallowd_error = 'HTTP/1.1 405 Method Not Allowed\r\nAllow: GET, HEAD, POST, PUT\r\nServer: '+server_name+'\r\nContent-Length: 0\r\n'.encode('utf-8')
+bad_request = 'HTTP/1.1 400 Bad Request\r\nServer: '+server_name+'\r\nContent-Length: 0\r\n'.encode('utf-8')
 def myreceive(c):
+
     chunks = []
     bytes_recd = 0
-    while bytes_recd < MSGLEN:
-        data = c.recv(min(MSGLEN - bytes_recd, 2048))
+    while 1:
+        data = c.recv(MSGLEN)
         if not data: break
         chunks.append(data)
         bytes_recd = bytes_recd + len(data)
+        if len(data) < MSGLEN: break
     return ''.join(chunks)
 
 def process_request(c,addr,datainput):
 
-	#Global Variable Db Connexion
-	
-	global dbconn 
+	global dbconn
 	try:
 		cursor = dbconn.cursor()
 		timestr = time.strftime("%Y/%m/%d-%H/%M/%S")
 		data = datainput.decode('utf-8')
-		list = data.split(' ')
+		datastructure=data.split('\r\n')
+		list = datastructure[0].split(' ')
 		method = list[0]
 		requested_file = list[1]
-                print ('Method: ', method)
-		
-		if (data == 'OPTIONS / HTTP/1.0') :
+		protocol = list[2]
+		print('Method: ', method)
+		print('protocol', protocol)
+
+#Allow: GET, HEAD, POST, PUT
+		if (protocol != 'HTTP/1.0' and protocol != 'HTTP/1.1') or (method != 'GET' and method != 'POST' and method != 'HEAD' and method != 'PUT'):
+			c.send(notallowd_error)
+			return
+
+		if (datastructure[0] == 'OPTIONS / HTTP/1.0') :
+			print('Options received')
 			c.send(server_banner) 
+			return
 		
 		current_time = time.strftime("%Y/%m/%d-%H:%M:%S")
 		ip_hacker = addr
@@ -80,64 +93,64 @@ def process_request(c,addr,datainput):
 
 		print  '%s Time:'% red,current_time, ' Hacker: ', ip_hacker 
 		print  '%s Bad guy is looking for : \n\r'% white,data 
-		
-		#/Sys/log/Client Data : Hacker IP , OS Information ..
-		
-		with open('Sys/log/Client Data', 'a') as file :
-                   file.write(timestr +'Informations :' +str(data)+'\n')
+		if method == 'GET' or method == 'POST':
+			with open('Sys/log/Client Data', 'a') as file :
+	                   file.write(timestr +'Informations :' +str(data)+'\r\n')
 
-		file = requested_file.split('?')[0]
-		file = file.lstrip('/')
-		if (file == ''):
-		 	file = 'sign.html'
-		if (file =='admin.php'):
-			file = 'sign.html'
+			file = requested_file.split('?')[0]
+			file = file.lstrip('/')
+			if (file == ''):
+			 	file = 'sign.html'
+			if (file =='admin.php'):
+				file = 'sign.html'
 
-		try:
-                  file_handler = open(file,'rb')
+			try:
+	                  file_handler = open(file,'rb')
 
-                  response = file_handler.read()
+	                  response = file_handler.read()
 
-                  file_handler.close()
+	                  file_handler.close()
 
-                  header = 'HTTP/1.1 200 OK\n'
-		  if(file.endswith(".jpg")):
+	                  header = 'HTTP/1.1 200 OK\r\n'
+			  if(file.endswith(".jpg")):
 
-            	    extension = 'image/jpg'
+	            	    extension = 'image/jpg'
 
-        	  elif(file.endswith(".css")):
+	        	  elif(file.endswith(".css")):
 
-            	    extension = 'text/css'
+	            	    extension = 'text/css'
 
-        	  else:
+	        	  else:
 
-            	     extension = 'text/html'
+	            	     extension = 'text/html'
 
 
-        	  header += 'Content-Type: '+str(extension)+'\n\n'
-                except Exception as e:
+	        	  header += 'Content-Type: '+str(extension)+'\r\n'
+	                except Exception as e:
 
-                  header = 'HTTP/1.1 404 not found \n\n'
- 		  response = '<html><body><p>Error 404: not found</p></body></html>'		
- 		  	
- 		  		#/Sys/log/File Requested : Hacker URI Tracing
+	                  header = 'HTTP/1.1 404 Not found\r\n'
+	 		  response = '<html><body><p>Error 404: not found</p></body></html>'		
+	 		  	
+	 		  		#/Sys/log/File Requested : Hacker URI Tracing
 
-		with open('Sys/log/File Requested', 'a') as file :
-           	   file.write(timestr +'Body request :' +str(requested_file)+'\n')
-		
-                # FUCNTION INSERT INTO MYSQL
-                aa = str(current_time) 
-                bb = str(ip_hacker)
-                cc = str(requested_file)
-                log = (aa, bb, cc) #log DATABASE_TABLE
-                cursor.execute("""INSERT INTO log (date, iphacker, uri) VALUES (%s, %s, %s)""",log);
-                dbconn.commit()
-
-    		reponse_finale = header.encode('utf-8')
-		reponse_finale += response
-		c.send(reponse_finale)
+			with open('Sys/log/File Requested', 'a') as file :
+	           	   file.write(timestr +'Body request :' +str(requested_file)+'\n')
+			
+	                # FUCNTION INSERT INTO MYSQL
+	                aa = str(current_time)
+	                bb = str(ip_hacker)
+	                cc = str(requested_file)
+	                log = (aa, bb, cc)
+	                cursor.execute("""INSERT INTO log (date, iphacker, uri) VALUES (%s, %s, %s)""",log);
+	                dbconn.commit()
+	    		header +=  'Server: '+server_name+'\r\n'
+	    		reponse_finale = header.encode('utf-8')
+			reponse_finale += response
+			c.send(reponse_finale)
 	except Exception, e:
-		print e
+		c.send(bad_request)
+	#	print ('Bad Request received')
+	#	print e
 
 #FUNCTION CLOSING SERVER IF U TYPING Ctrl+C.
 def signal_handler(sig, frame):
@@ -168,7 +181,7 @@ def Main():
  	username = "isetadmin"
 	
 	#DataBase Connect
-	dbconn = MySQLdb.connect("localhost", "root", "isetso", "isetsohoney")
+	dbconn = MySQLdb.connect("localhost", "pannes", "Isetso#2018", "isetsohoney")
 	
  	user_in = raw_input('Username : ')
  	user_input = getpass.getpass('Password : ')
@@ -183,22 +196,18 @@ def Main():
  	    file.write(timestr + '**** Warning **** : It is a Brute Force:'  +str(user_in) +'/' +str(user_input))
            sys.exit('%s Incorrect Password, terminating... \n' % bad,white)
  	print '\n%s Connexion avec Succes' % good
- 	
-	#Socket Connexion
-	server_sock = socket.socket()
+ 	#Socket Connexion
+	server_sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 	server_name = ''
 	server_port = 999
-	
 	#Banner of IoT : Router
-	
 	server_banner = """Sagem F@st 2604 ADSL router linux 7 3.49a4G_Topnet
   | banner: \xFF\xFD\x01\xFF\xFD!\xFF\xFB\x01\xFF\xFB\x03FAST2604 ADSL Rout
   |_er (Software Version:3.49a4G_Topnet)\x0D\x0ALogin:
   Service Info: Device: broadband router """
-	
+    
 	server_sock.bind((server_name, server_port))
 	header = ''
-	
 	#Server Running.
 	print '%s Starting Server ON' % run,white,server_name, server_port
 
@@ -217,7 +226,6 @@ def Main():
 		print ex
 		server_sock.close()
  
-
 if __name__== '__main__' :
 
         Main ()
