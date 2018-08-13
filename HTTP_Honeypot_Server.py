@@ -14,6 +14,7 @@ import mysql.connector
 import MySQLdb
 import signal
 import getpass
+import re
 
 colors = True # Output should be colored
 machine = sys.platform # Detecting the os of current system
@@ -47,13 +48,24 @@ bad_request = 'HTTP/1.1 400 Bad Request\r\nServer: '+server_name+'\r\nContent-Le
 def myreceive(c):
 
     chunks = []
-    bytes_recd = 0
+    first = False
+    match = False
+    httpwContent = False
     while 1:
-        data = c.recv(MSGLEN)
-        if not data: break
-        chunks.append(data)
-        bytes_recd = bytes_recd + len(data)
-        if len(data) < MSGLEN: break
+    	try:
+        	data = c.recv(MSGLEN)
+        	if not data: break
+        	chunks.append(data)
+        	first=True
+        	
+        	if not match: match = re.match('/1',data)
+        	if not httpwContent: httpwContent = re.match('Content-Type:\s',data)
+        	if first and not match: break  # not HTTP stream
+        	if not first and httpwContent: break # HTTP sans Contenu
+        	#if len(data) < MSGLEN: break
+        except Exception as e:
+        	break
+#    print(''.join(chunks))
     return ''.join(chunks)
 
 def process_request(c,addr,datainput):
@@ -74,11 +86,6 @@ def process_request(c,addr,datainput):
 #Allow: GET, HEAD, POST, PUT
 		if (protocol != 'HTTP/1.0' and protocol != 'HTTP/1.1') or (method != 'GET' and method != 'POST' and method != 'HEAD' and method != 'PUT'):
 			c.send(notallowd_error)
-			return
-
-		if (datastructure[0] == 'OPTIONS / HTTP/1.0') :
-			print('Options received')
-			c.send(server_banner) 
 			return
 		
 		current_time = time.strftime("%Y/%m/%d-%H:%M:%S")
@@ -112,6 +119,9 @@ def process_request(c,addr,datainput):
 	                  file_handler.close()
 
 	                  header = 'HTTP/1.1 200 OK\r\n'
+	                  header +='Connection: close\r\n'
+	                  header +=  'Server: '+server_name+'\r\n'
+
 			  if(file.endswith(".jpg")):
 
 	            	    extension = 'image/jpg'
@@ -126,7 +136,11 @@ def process_request(c,addr,datainput):
 
 
 	        	  header += 'Content-Type: '+str(extension)+'\r\n'
+	        	  header +=  'Content-Length: '+str(len(response))+'\r\n\n'
 	                except Exception as e:
+	                  print(e)
+
+
 
 	                  header = 'HTTP/1.1 404 Not found\r\n'
 	 		  response = '<html><body><p>Error 404: not found</p></body></html>'		
@@ -143,9 +157,10 @@ def process_request(c,addr,datainput):
 	                log = (aa, bb, cc)
 	                cursor.execute("""INSERT INTO log (date, iphacker, uri) VALUES (%s, %s, %s)""",log);
 	                dbconn.commit()
-	    		header +=  'Server: '+server_name+'\r\n'
+	    		
 	    		reponse_finale = header.encode('utf-8')
 			reponse_finale += response
+			#print(reponse_finale)
 			c.send(reponse_finale)
 	except Exception, e:
 		c.send(bad_request)
@@ -216,6 +231,7 @@ def Main():
 		while 1:
 			data = None
 			(c,addr) = server_sock.accept()
+			c.settimeout(3)
 			try:
 				data = myreceive(c)
 			except socket.error, ex:
