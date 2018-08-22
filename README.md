@@ -1,5 +1,5 @@
-# HTTP-Honeypot
-This tool to simulate http server attacks in Python which logs HackerIP and all the tracing he does into a Logfile then a database.
+# IoT-Honeypot
+This tool to simulate Device IoT(Router) attacks in Python which logs HackerIP and all the tracing he does into a Logfile then a database.
 
 ![ssmma](https://user-images.githubusercontent.com/23563528/43874741-c0ff7c96-9b8d-11e8-9813-5acf04868cdf.png)
 
