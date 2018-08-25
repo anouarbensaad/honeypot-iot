@@ -40,3 +40,7 @@ This tool to simulate Device IoT(Router) attacks in Python which logs HackerIP a
 <p align="center">
 <img src="https://user-images.githubusercontent.com/23563528/43874380-d7dd5066-9b8b-11e8-8ce7-28903206cdeb.png">
 </p>
+
+### License
+
+[MIT](LICENSE)
