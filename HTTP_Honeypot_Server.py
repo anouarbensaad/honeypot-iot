@@ -179,7 +179,7 @@ signal.signal(signal.SIGINT, signal_handler)
 def Main():
 
 
-#Just Banner
+#ISETSO BANNER ASCII
 	print("%s    _           __  _____            __  __                      " % red)
 	print("%s   (_)_______  / /_/ ___/____       / / / /___  ____  ___  __  __" % red)
 	print("%s  / / ___/ _ \/ __/\__ \/ __ \     / /_/ / __ \/ __ \/ _ \/ / / /" % red)
