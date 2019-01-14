@@ -1,5 +1,9 @@
 # IoT-Honeypot
 
+![Plateform](https://img.shields.io/badge/platform-Linux%2FMacOS-red.svg) 
+![Python](https://img.shields.io/badge/Python-V.2-blue.svg)
+
+
 ![isetsohoney to git](https://user-images.githubusercontent.com/23563528/44610164-50430700-a7fb-11e8-9fc8-9d9934c0db25.gif)
 
 This tool to simulate Device IoT(Router) attacks in Python which logs HackerIP and all the tracing he does into a Logfile then a database.
