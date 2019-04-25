@@ -113,7 +113,7 @@ def process_request(c,addr,datainput):
 
 			try:
 	                  file_handler = open(file,'rb')
-
+0
 	                  response = file_handler.read()
 
 	                  file_handler.close()
@@ -198,18 +198,18 @@ def Main():
 	#DataBase Connect
 	dbconn = MySQLdb.connect("hdb", "honeypot", "123", "honeypot")
 	
- 	user_in = raw_input('Username : ')
- 	user_input = getpass.getpass('Password : ')
+ 	#user_in = raw_input('Username : ')
+ 	#user_input = getpass.getpass('Password : ')
  	
  	#/Sys/log/login, PWD : Hacker Try of Login & Password
  	with open('Sys/log/login, PWD','a') as file :
        		file.write(timestr +'\n' +'LOGIN: ' +str(user_in)+'\n' +'PWD: '+str(user_input)+'\n')
     #Administrator Condition Connexion.
- 	if  user_input != password or user_in != username  :
+ 	#if  user_input != password or user_in != username  :
  	#Warning File, Administrator Typing Fault.
-           with open('Warning', 'a+r') as file :
- 	    file.write(timestr + '**** Warning **** : It is a Brute Force:'  +str(user_in) +'/' +str(user_input))
-           sys.exit('%s Incorrect Password, terminating... \n' % bad,white)
+         #  with open('Warning', 'a+r') as file :
+ 	 #   file.write(timestr + '**** Warning **** : It is a Brute Force:'  +str(user_in) +'/' +str(user_input))
+         #  sys.exit('%s Incorrect Password, terminating... \n' % bad,white)
  	print '\n%s Connexion avec Succes' % good
  	#Socket Connexion
 	server_sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
