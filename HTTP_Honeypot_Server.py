@@ -196,7 +196,7 @@ def Main():
  	username = "isetadmin"
 	
 	#DataBase Connect
-	dbconn = MySQLdb.connect("localhost", "pannes", "Isetso#2018", "isetsohoney")
+	dbconn = MySQLdb.connect("hdb", "honeypot", "123", "honeypot")
 	
  	user_in = raw_input('Username : ')
  	user_input = getpass.getpass('Password : ')
