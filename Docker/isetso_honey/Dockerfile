@@ -30,5 +30,3 @@ WORKDIR /Iot_honeypot
 ENTRYPOINT [ "python" , "honeyserver.py" ]
 
 EXPOSE 999
-CMD ["python honeyserver.py"]
-
