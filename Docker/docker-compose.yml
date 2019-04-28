@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+
+  hdb:
+    build: ./db
+    container_name: honeydb
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=honeypot
+      - MYSQL_USER=honeypot
+      - MYSQL_PASSWORD=123
+    ports:
+      - 3306:3306
+    networks:
+      - hpot
+    volumes:
+      - honey-data:/var/lib/mysql
+
+  web:
+    image: php:7.2-apache
+    container_name: honeyadmin
+    ports:
+      - 80:80
+    networks:
+      - hpot
+    volumes:
+      - ./web/adm:/www/html/
+
+  honeypot:
+    build: ./isetso_honey
+    container_name: honeyserver
+    ports:
+      - 9999:999
+    networks:
+      - hpot
+    depends_on:
+      - hdb
+    links:
+      - hdb:honeydb
+
+networks:
+  hpot:
+volumes:
+  honey-data:
