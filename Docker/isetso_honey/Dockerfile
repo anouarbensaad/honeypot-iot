@@ -26,7 +26,7 @@ RUN apt-get update \
 RUN pip install mysql-connector-python
 
 
-WORKDIR /Iot_honeypot
+WORKDIR IoT-Honeypot
 ENTRYPOINT [ "python" , "honeyserver.py" ]
 
 EXPOSE 999
