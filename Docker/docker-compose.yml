@@ -18,7 +18,7 @@ services:
       - honey-data:/var/lib/mysql
 
   web:
-    image: php:7.2-apache
+    build: ./web
     container_name: honeyadmin
     ports:
       - 80:80
