@@ -14,18 +14,32 @@ services:
       - 3306:3306
     networks:
       - hpot
+    depends_on:
+      - honeypot
     volumes:
       - honey-data:/var/lib/mysql
 
   web:
-    build: ./web
+    image: nginx:alpine
     container_name: honeyadmin
+    working_dir: /adm
     ports:
       - 80:80
     networks:
       - hpot
     volumes:
-      - ./web/adm:/www/html/
+      - .:/adm
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
+  php-fpm:
+    build: ./php-fpm
+    container_name: php
+    working_dir: /adm
+    networks:
+      - hpot
+    volumes:
+      - .:/adm
+      - ./php-fpm/php-ini-overrides.ini:/etc/php/7.2/fpm/conf.d/99-overrides.ini
 
   honeypot:
     build: ./isetso_honey
@@ -34,8 +48,6 @@ services:
       - 9999:999
     networks:
       - hpot
-    depends_on:
-      - hdb
     links:
       - hdb:honeydb
 
